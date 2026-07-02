@@ -1,0 +1,9 @@
+{
+  "name": "ai-property-appraisal-demo",
+  "version": "1.0.0",
+  "description": "Demo AI-assisted property appraisal app — Claude API + Netlify. Frontend showcase only, no persistence.",
+  "main": "index.html",
+  "scripts": {
+    "dev": "netlify dev"
+  }
+}

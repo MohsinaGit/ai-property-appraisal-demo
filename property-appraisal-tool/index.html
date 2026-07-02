@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Site & Sum — AI Property Appraisal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <div class="brand">
+        <span class="brand-mark">⌖</span>
+        <span class="brand-name">Site &amp; Sum</span>
+      </div>
+      <span class="brand-tag">AI-assisted property appraisal — demo</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow">Survey · Analyse · Appraise</p>
+          <h1>Turn a property brief into a defensible valuation in minutes.</h1>
+          <p class="hero-sub">Enter the site details on the left. Claude reads them like an appraiser would — comparable sales, condition, land value — and drafts a structured report on the right.</p>
+        </div>
+        <div class="hero-plan" aria-hidden="true">
+          <svg viewBox="0 0 360 280" class="blueprint-svg">
+            <rect x="40" y="60" width="200" height="140" class="bp-line" fill="none"/>
+            <line x1="40" y1="60" x2="240" y2="60" class="bp-line"/>
+            <line x1="240" y1="60" x2="300" y2="100" class="bp-line"/>
+            <line x1="300" y1="100" x2="300" y2="200" class="bp-line"/>
+            <line x1="300" y1="200" x2="240" y2="200" class="bp-line"/>
+            <!-- dimension lines -->
+            <line x1="40" y1="40" x2="240" y2="40" class="dim-line"/>
+            <text x="140" y="32" class="dim-text">12.4 m</text>
+            <line x1="20" y1="60" x2="20" y2="200" class="dim-line"/>
+            <text x="-110" y="14" transform="rotate(-90)" class="dim-text">8.7 m</text>
+            <circle cx="270" cy="150" r="3" class="bp-pin"/>
+            <text x="280" y="154" class="pin-text">Lot 14</text>
+            <text x="60" y="240" class="val-label">EST. VALUE</text>
+            <text x="60" y="266" class="val-figure">$742,000</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORKSPACE -->
+    <section class="workspace">
+      <div class="wrap workspace-grid">
+
+        <!-- INPUT FORM -->
+        <div class="panel form-panel">
+          <h2 class="panel-title"><span class="panel-index">01</span> Site details</h2>
+          <form id="appraisal-form">
+            <label>
+              Property address
+              <input type="text" id="address" placeholder="14 Wattle Court, Manor Lakes VIC 3024" required />
+            </label>
+
+            <div class="field-row">
+              <label>
+                Property type
+                <select id="propertyType" required>
+                  <option value="">Select…</option>
+                  <option>House</option>
+                  <option>Townhouse</option>
+                  <option>Apartment / Unit</option>
+                  <option>Vacant land</option>
+                  <option>Commercial</option>
+                </select>
+              </label>
+              <label>
+                Land size (m²)
+                <input type="number" id="landSize" placeholder="450" required />
+              </label>
+            </div>
+
+            <div class="field-row">
+              <label>
+                Bedrooms
+                <input type="number" id="bedrooms" placeholder="3" />
+              </label>
+              <label>
+                Bathrooms
+                <input type="number" id="bathrooms" placeholder="2" />
+              </label>
+            </div>
+
+            <label>
+              Condition
+              <select id="condition">
+                <option>Excellent — recently renovated</option>
+                <option selected>Good — well maintained</option>
+                <option>Fair — some updates needed</option>
+                <option>Poor — needs significant work</option>
+              </select>
+            </label>
+
+            <label>
+              Comparable recent sales nearby (optional)
+              <textarea id="comparables" rows="3" placeholder="e.g. 9 Wattle Court sold for $710,000 in March 2026, similar size and condition."></textarea>
+            </label>
+
+            <label>
+              Additional notes
+              <textarea id="notes" rows="2" placeholder="Anything else relevant: zoning, view, recent works, market conditions…"></textarea>
+            </label>
+
+            <button type="submit" id="generate-btn" class="btn-primary">
+              <span class="btn-label">Generate appraisal</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- REPORT OUTPUT -->
+        <div class="panel report-panel">
+          <h2 class="panel-title"><span class="panel-index">02</span> Appraisal report</h2>
+
+          <div id="report-empty" class="report-empty">
+            <p>Your generated report will appear here as a structured, ledger-style document — ready to copy or save.</p>
+          </div>
+
+          <div id="report-loading" class="report-loading" hidden>
+            <div class="spinner"></div>
+            <p>Reading the site details and drafting the appraisal…</p>
+          </div>
+
+          <article id="report-output" class="report-output" hidden></article>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ADMIN PANEL -->
+    <section class="admin-section" id="admin-section" hidden>
+      <div class="wrap">
+        <div class="panel admin-panel">
+          <h2 class="panel-title"><span class="panel-index">03</span> Admin panel</h2>
+          <p class="admin-sub">Type an instruction the way you'd give it to an appraiser — Claude will regenerate the report following it. e.g. "Adjust the estimated value to $780,000" or "Add a sentence noting the kitchen was renovated in 2025."</p>
+          <textarea id="adminInstruction" rows="3" placeholder="Adjust the estimated value to $780,000 and mention the renovated kitchen in Key Features."></textarea>
+          <button type="button" id="regenerate-btn" class="btn-secondary">
+            <span class="btn-label">Apply instruction &amp; regenerate</span>
+          </button>
+          <p id="revision-tag" class="revision-tag"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-it-works">
+      <div class="wrap">
+        <h2 class="panel-title">How this demo is built</h2>
+        <div class="steps-grid">
+          <div class="step">
+            <span class="step-index">01</span>
+            <h3>Form capture</h3>
+            <p>Property details are captured client-side and validated before submission.</p>
+          </div>
+          <div class="step">
+            <span class="step-index">02</span>
+            <h3>Claude API</h3>
+            <p>A Netlify function sends the structured brief to Claude, prompted to reason like a property appraiser.</p>
+          </div>
+          <div class="step">
+            <span class="step-index">03</span>
+            <h3>Admin panel</h3>
+            <p>The admin types plain-English instructions — Claude regenerates the report following them, in context.</p>
+          </div>
+          <div class="step">
+            <span class="step-index">04</span>
+            <h3>Report render</h3>
+            <p>The response is parsed into a structured, ledger-style report in the browser.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Site &amp; Sum is a demo project built to showcase an AI-assisted appraisal workflow — Claude API + Netlify. Not a real valuation service.</p>
+    </div>
+  </footer>
+
+<script src="app.js"></script>
+</body>
+</html>
